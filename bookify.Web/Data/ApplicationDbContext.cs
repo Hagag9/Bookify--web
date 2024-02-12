@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using bookify.Web.Core.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace bookify.Web.Data
@@ -9,5 +10,6 @@ namespace bookify.Web.Data
             : base(options)
         {
         }
+        public DbSet<Category> Categories { get; set; }
     }
 }
