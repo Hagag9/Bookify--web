@@ -11,13 +11,22 @@
     <link rel="stylesheet" href="~/assets/css/plugins.bundle.css" type="text/css" />
     <link rel="stylesheet" href="~/assets/css/style.bundle.css" type="text/css" />
     <!--end::Global Stylesheets Bundle-->
+	<link rel="stylesheet" href="~/lib/animate.css/animate.min.css" />
+	@await RenderSectionAsync("Styles", required: false)
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/bookify.Web.styles.css" asp-append-version="true" />
 </head>
-<body id="kt_body" class="header-fixed header-tablet-and-mobile-fixed">
+<body id="kt_body" class="header-fixed header-tablet-and-mobile-fixed bage-loading">
 		<!--begin::Theme mode setup on page load-->
 		<script>var defaultThemeMode = "light"; var themeMode; if ( document.documentElement ) { if ( document.documentElement.hasAttribute("data-theme-mode")) { themeMode = document.documentElement.getAttribute("data-theme-mode"); } else { if ( localStorage.getItem("data-theme") !== null ) { themeMode = localStorage.getItem("data-theme"); } else { themeMode = defaultThemeMode; } } if (themeMode === "system") { themeMode = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"; } document.documentElement.setAttribute("data-theme", themeMode); }</script>
 		<!--end::Theme mode setup on page load-->
+		<!--begin::bage loader-->
+		<div class="app-page-loader">
+		<span class="spinner-border text-primary" role="status">
+			<span class="visually-hidden">Loading...</span>
+		</span>
+	</div>
+	<!--End::bage loader-->
 		<!--begin::Main-->
 		<!--begin::Root-->
 		<div class="d-flex flex-column flex-root">
@@ -58,11 +67,15 @@
 		</div>
 		<!--end::Scrolltop-->
 
+		<span id="Message" class="d-none">@TempData["Message"]</span>
+		<partial name="_Modal" />
     <script>var hostUrl = "assets/";</script>
     <!--begin::Global Javascript Bundle(mandatory for all pages)-->
     <script src="~/assets/js/plugins.bundle.js"></script>
     <script src="~/assets/js/scripts.bundle.js"></script>
     <!--end::Global Javascript Bundle-->
+	<script src="~/lib/bootbox.js/bootbox.min.js"></script>
+	@await RenderSectionAsync("Plugins", required: false)
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
