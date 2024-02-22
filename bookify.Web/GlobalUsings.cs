@@ -6,3 +6,4 @@ global using bookify.Web.Filters;
 global using AutoMapper;
 global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.EntityFrameworkCore;
+global using bookify.Web.Core.Consts;

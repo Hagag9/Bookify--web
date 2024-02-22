@@ -20,10 +20,10 @@ namespace bookify.Web.Controllers
             return View(ViewModel);
         }
         [HttpGet]
-		[AjaxOnly]
-		public IActionResult Create()
+        [AjaxOnly]
+        public IActionResult Create()
         {      
-            return PartialView(viewName:"_Form");
+            return PartialView("_Form");
         }
         [HttpPost]
 		[ValidateAntiForgeryToken]
@@ -80,7 +80,9 @@ namespace bookify.Web.Controllers
 		}
         public IActionResult UniqueName(CategoryFormViewModel model)
         {
-            if (_context.Categories.Any(c => c.Name == model.Name))
+			if (model.Name == (_context.Categories.Find(model.Id))?.Name)
+				return Json(true);
+			if (_context.Categories.Any(c => c.Name == model.Name))
                 return Json(false);
             else return Json(true);
         }

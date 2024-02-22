@@ -139,7 +139,7 @@ var KTDatatables = function () {
 }();
 
 $(document).ready(function () {
-	// Dweet Alert
+	// Sweet Alert
     var message = $('#Message').text();
     if (message !== '') {
 		showSuccessMessage(message);
@@ -166,7 +166,6 @@ $(document).ready(function () {
 			error: function () {
 				showErrorMessage();
 			}
-
 		});
 		modal.modal('show');
 	});

@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+﻿
 
 namespace bookify.Web.Core.Mapping
 {
@@ -9,6 +9,11 @@ namespace bookify.Web.Core.Mapping
             //category
             CreateMap<Category, CategoryViewModel>();
 			CreateMap<CategoryFormViewModel, Category>().ReverseMap();
+
+            //Authors
+            CreateMap<Author, AuthorViewModel>();
+			CreateMap<AuthorFormViewModel, Author>().ReverseMap();
+
 		}
     }
 }
