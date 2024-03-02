@@ -72,11 +72,10 @@ namespace bookify.Web.Controllers
         }
         public IActionResult UniqueName(AuthorFormViewModel model)
         {
-			if (model.Name == (_context.Authors.Find(model.Id))?.Name)
-				return Json(true);
-			if (_context.Authors.Any(c => c.Name == model.Name))
-                return Json(false);
-            else return Json(true);
+		    var author = _context.Authors.SingleOrDefault(a => a.Name== model.Name);
+            var isAllow = author is null || author.Id == model.Id;
+
+            return Json(isAllow);
         }
     }
 }

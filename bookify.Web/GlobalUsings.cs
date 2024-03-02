@@ -7,3 +7,5 @@ global using AutoMapper;
 global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.EntityFrameworkCore;
 global using bookify.Web.Core.Consts;
+global using Microsoft.AspNetCore.Mvc.Rendering;
+global using bookify.Web.Settings;

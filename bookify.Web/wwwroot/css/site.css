@@ -16,3 +16,17 @@ html {
 body {
   margin-bottom: 60px;
 }
+/*start Override Theme */
+.form-floating > .form-select {
+    padding-bottom: 0.025rem;
+}
+/*End Override Theme */
+
+/*start custom styles */
+.dt-spinner + div{
+    display :none !important;
+}
+/*End custom styles */
+.h-70px{
+    height:70px !important;
+}

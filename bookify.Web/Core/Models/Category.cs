@@ -7,5 +7,7 @@ namespace bookify.Web.Core.Models
         public int Id { get; set; }
         [MaxLength(100)]
         public string Name { get; set; } = null!;
+
+        public ICollection<BookCategory> Bokks {  get; set; } = new List<BookCategory>();
     }
 }

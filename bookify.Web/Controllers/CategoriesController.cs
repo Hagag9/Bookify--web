@@ -80,11 +80,10 @@ namespace bookify.Web.Controllers
 		}
         public IActionResult UniqueName(CategoryFormViewModel model)
         {
-			if (model.Name == (_context.Categories.Find(model.Id))?.Name)
-				return Json(true);
-			if (_context.Categories.Any(c => c.Name == model.Name))
-                return Json(false);
-            else return Json(true);
-        }
+			var category = _context.Categories.SingleOrDefault(a => a.Name == model.Name);
+			var isAllow = category is null || category.Id == model.Id;
+
+			return Json(isAllow);
+		}
     }
 }
