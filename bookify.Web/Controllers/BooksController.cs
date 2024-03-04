@@ -64,9 +64,10 @@ namespace bookify.Web.Controllers
 		public IActionResult Details(int id)
 		{
 			var book = _context.Books.Include(b => b.Author)
-									.Include(b=>b.Categories)
-									.ThenInclude(c=>c.Category)
-									.SingleOrDefault(b => b.Id == id);
+									 .Include(b => b.Copies)
+									 .Include(b=>b.Categories)
+									 .ThenInclude(c=>c.Category)
+									 .SingleOrDefault(b => b.Id == id);
 			if (book is null)
 				return NotFound();
 			var model = _mapper.Map<BookViewModel>(book);

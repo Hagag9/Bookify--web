@@ -1,4 +1,5 @@
-﻿@model BookViewModel
+﻿@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery antiforgery
+@model BookViewModel
 @{
 	ViewData["Title"] = Model.Title;
 }
@@ -10,8 +11,8 @@
 			<div class="d-flex flex-wrap flex-sm-nowrap mb-6">
 				<!--begin::Image-->
 				<div class="d-flex flex-center flex-shrink-0 bg-light rounded w-100px h-100px w-lg-150px h-lg-150px me-7 mb-4">
-					<a data-fslightbox href="@Model.ImageUrl">
-						<img class="mw-50px mw-lg-75px" src="@Model.ImageThumbnailUrl" alt="@Model.Title">
+					<a data-fslightbox href="@(string.IsNullOrEmpty(Model.ImageUrl)?"/images/books/no-book.jpg":Model.ImageUrl)">
+						<img class="mw-50px mw-lg-75px" src="@(string.IsNullOrEmpty(Model.ImageThumbnailUrl)?"/images/books/no-book.jpg":Model.ImageThumbnailUrl)" alt="@Model.Title">
 					</a>
 				</div>
 				<!--end::Image-->
@@ -110,7 +111,7 @@
 										</svg>
 									</span>
 									<!--end::Svg Icon-->
-									<div class="fs-7 fw-bold counted" data-kt-countup="true" data-kt-countup-value="7">0</div>
+									<div id="CopiesCount" class="fs-7 fw-bold" data-kt-countup="true" data-kt-countup-value="@Model.Copies.Count()">0</div>
 								</div>
 								<!--end::Number-->
 								<!--begin::Label-->
@@ -178,16 +179,67 @@
 				<!--begin::Card title-->
 				<div class="card-title fs-3 fw-bold">Copies</div>
 				<!--end::Card title-->
+				<div class="card-toolbar">
+					<!--begin::Add Button-->
+					<a href="#" class="btn btn-sm btn-primary js-render-modal" data-title="Add Copy" data-url="/BookCopies/Create?bookid=@Model.Id">
+						<i class="bi bi-plus-square-dotted"></i>
+						Add
+					</a>
+					<!--end::Add Button-->
+				</div>
 			</div>
 			<!--end::Card header-->
 			<div class="card-body">
-				Copies
+				<div class="@(Model.Copies.Any()?"d-none":string.Empty) alert alert-dismissible bg-light-warning border border-warning border-3 border-dashed d-flex flex-column flex-sm-row w-100 p-5 mb-10 js-alert">
+					<!--begin::Svg Icon | path: /var/www/preview.keenthemes.com/keenthemes/metronic/docs/core/html/src/media/icons/duotune/general/gen044.svg-->
+					<span class="svg-icon svg-icon-warning svg-icon-2hx me-4 mb-5 mb-sm-0">
+						<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<rect opacity="0.3" x="2" y="2" width="20" height="20" rx="10" fill="currentColor" />
+							<rect x="11" y="14" width="7" height="2" rx="1" transform="rotate(-90 11 14)" fill="currentColor" />
+							<rect x="11" y="17" width="2" height="2" rx="1" transform="rotate(-90 11 17)" fill="currentColor" />
+						</svg>
+					</span>
+					<!--end::Svg Icon-->
+					<div class="d-flex flex-column pe-0 pe-sm-10">
+						<h5 class="mb-1">No Copies</h5>
+						<span>There is No copies for this book yet!</span>
+					</div>
+					<!--end::Content-->
+					<!--begin::Close-->
+					<button type="button" class="position-absolute position-sm-relative m-2 m-sm-0 top-0 end-0 btn btn-icon ms-sm-auto" data-bs-dismiss="alert">
+						<i class="ki-duotone ki-cross fs-1 text-info"><span class="path1"></span><span class="path2"></span></i>
+					</button>
+					<!--end::Close-->
+				</div>
+				<table class="table table-row-dahsed table-row-gray-300 gy-2 align-middle @(Model.Copies.Any()?string.Empty:"d-none")">
+					<thead>
+						<tr class="fw-bold fs-6 text-gray-400 text-uppercase">
+							<th>Serial number</th>
+							<th>Edition</th>
+							<th>Rental?</th>
+							<th>Status</th>
+							<th>Created On</th>
+							<th class="text-center">&emsp;&emsp;Action</th>
+						</tr>
+					</thead>
+					<tbody>
+						@foreach (var copy in Model.Copies.OrderByDescending(c => c.Id))
+						{
+							<partial name="_BookcopyRow" model="@copy" />
+						}
+					</tbody>
+				</table>
 			</div>
 		</div>
 		<!--end::Card-->
 	</div>
 </div>
-
+<input type="hidden" name="__RequestVerificationToken" value="@antiforgery.GetAndStoreTokens(Context).RequestToken" />
 @section Plugins{
 	<script src="~/assets/plugins/fslightbox/fslightbox.bundle.js"></script>
+}
+@section Scripts
+{
+	<partial name="_ValidationScriptsPartial" />
+   <script src="~/js/books-details.js" asp-append-version="true"></script>
 }
