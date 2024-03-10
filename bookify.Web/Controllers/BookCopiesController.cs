@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
-namespace bookify.Web.Controllers
+﻿namespace bookify.Web.Controllers
 {
+	[Authorize(Roles = AppRoles.Archive)]
 	public class BookCopiesController : Controller
 	{
 		private readonly ApplicationDbContext _context;
@@ -42,7 +41,8 @@ namespace bookify.Web.Controllers
             {
               EditionNumber = model.EditionNumber,
 			  IsAvailableForRental = model.IsAvailableForRental && book.IsAvailableForRental,
-            };
+			  CreatedById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value
+		};
 			book.Copies.Add(copy);
 			_context.SaveChanges();
 			var viewModel = _mapper.Map<BookCopyViewModel>(copy);
@@ -69,6 +69,7 @@ namespace bookify.Web.Controllers
 				return NotFound();
 			copy = _mapper.Map(model, copy);
 			copy.IsAvailableForRental = model.IsAvailableForRental && copy.Book!.IsAvailableForRental;
+			copy.LastUpdatedById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
 			copy.LastUpdatedOn=DateTime.Now;
 			_context.SaveChanges();
 			var viewModel = _mapper.Map<BookCopyViewModel>(copy);
@@ -82,6 +83,7 @@ namespace bookify.Web.Controllers
 			if (copy == null) 
 				return NotFound();
 			copy.IsDeleted=!copy.IsDeleted;
+			copy.LastUpdatedById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
 			copy.LastUpdatedOn= DateTime.Now;
 			_context.SaveChanges();
 			return Ok();

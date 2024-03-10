@@ -9,3 +9,6 @@ global using Microsoft.EntityFrameworkCore;
 global using bookify.Web.Core.Consts;
 global using Microsoft.AspNetCore.Mvc.Rendering;
 global using bookify.Web.Settings;
+global using Microsoft.AspNetCore.Identity;
+global using Microsoft.AspNetCore.Authorization;
+global using System.Security.Claims;

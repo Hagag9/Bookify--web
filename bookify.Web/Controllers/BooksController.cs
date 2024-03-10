@@ -5,6 +5,7 @@ using System.Linq.Dynamic.Core;
 
 namespace bookify.Web.Controllers
 {
+	[Authorize(Roles = AppRoles.Archive)]
 	public class BooksController : Controller
 	{
 		private readonly IWebHostEnvironment _webHostEnvironment;
@@ -132,9 +133,9 @@ namespace bookify.Web.Controllers
 				//	return BadRequest();
 				//}
 			}
+			book.CreatedById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
 			foreach (var category in model.SelectedCategories)
 				book.Categories.Add(new BookCategory { CategoryId = category });
-
 			_context.Books.Add(book);
 			_context.SaveChanges();
 			return RedirectToAction(nameof(Details), new {id=book.Id});
@@ -157,10 +158,11 @@ namespace bookify.Web.Controllers
 		{
 			if (!ModelState.IsValid)
 				return View("Form", PopulateViewModel(model));
-			var book = _context.Books.Include(b => b.Categories).SingleOrDefault(b => b.Id == model.Id);
+			var book = _context.Books.Include(b=>b.Copies)
+							       	 .Include(b => b.Categories).SingleOrDefault(b => b.Id == model.Id);
 			if (book is null)
 				return NotFound();
-			string imageId = null!;
+			//string imageId = null!;
 			if (model.Image is not null)
 			{
 				if(!string.IsNullOrEmpty(book.ImageUrl))
@@ -224,11 +226,15 @@ namespace bookify.Web.Controllers
 				model.ImageThumbnailUrl=book.ImageUrl;
 			}
 			book = _mapper.Map(model,book);
+			book.LastUpdatedById = book.CreatedById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
 			book.LastUpdatedOn= DateTime.Now;
-			book.ImagePublicId = imageId;	
+			//book.ImagePublicId = imageId;	
 		
 			foreach (var category in model.SelectedCategories)
 				book.Categories.Add(new BookCategory { CategoryId = category });
+			if (!model.IsAvailableForRental)
+				foreach (var copy in book.Copies)
+					copy.IsAvailableForRental = false;
 
 			_context.SaveChanges();
 			return RedirectToAction(nameof(Details), new { id = book.Id });
@@ -237,11 +243,12 @@ namespace bookify.Web.Controllers
 		[ValidateAntiForgeryToken]
 		public IActionResult ToggleStatus(int id)
 		{
-			var Book = _context.Books.Find(id);
-			if (Book == null)
+			var book = _context.Books.Find(id);
+			if (book == null)
 				return NotFound();
-			Book.IsDeleted = !Book.IsDeleted;
-			Book.LastUpdatedOn = DateTime.Now;
+			book.IsDeleted = !book.IsDeleted;
+			book.LastUpdatedById = book.CreatedById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+			book.LastUpdatedOn = DateTime.Now;
 			_context.SaveChanges();
 			return Ok();
 		}

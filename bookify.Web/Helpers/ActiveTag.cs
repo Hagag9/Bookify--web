@@ -17,7 +17,8 @@ namespace bookify.Web.Helpers
 		{
 			if (string.IsNullOrEmpty(ActiveWhen)) return;
 			var CurrentControler = ViewContextData?.RouteData.Values["controller"]?.ToString();
-			if(CurrentControler!.Equals(ActiveWhen))
+
+			if(CurrentControler is  not null && CurrentControler.Equals(ActiveWhen))
 			{
 				var classAttribute = output.Attributes["class"].Value;
 				var Classes = classAttribute == null ? "active" : classAttribute + "active";

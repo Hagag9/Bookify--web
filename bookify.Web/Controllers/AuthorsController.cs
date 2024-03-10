@@ -1,7 +1,7 @@
-﻿
-namespace bookify.Web.Controllers
+﻿namespace bookify.Web.Controllers
 {
-    public class AuthorsController : Controller
+	[Authorize(Roles = AppRoles.Archive)]
+	public class AuthorsController : Controller
     {
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
@@ -30,6 +30,7 @@ namespace bookify.Web.Controllers
             if (!ModelState.IsValid)
                 return BadRequest();
             var Author=_mapper.Map<Author>(model);
+            Author.CreatedById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
             _context.Authors.Add(Author);
             _context.SaveChanges();
             return PartialView("_AuthorRow", _mapper.Map<AuthorViewModel>(Author));
@@ -54,8 +55,9 @@ namespace bookify.Web.Controllers
             if (Author == null) 
             return NotFound(); 
             Author = _mapper.Map(model, Author);
-            Author.LastUpdatedOn=DateTime.Now;
-            _context.SaveChanges();
+			Author.LastUpdatedById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+			Author.LastUpdatedOn=DateTime.Now;          
+			_context.SaveChanges();
             return PartialView("_AuthorRow", _mapper.Map<AuthorViewModel>(Author));
         }
         [HttpPost]
@@ -66,7 +68,8 @@ namespace bookify.Web.Controllers
             if (Author == null)
                 return NotFound();
             Author.IsDeleted = !Author.IsDeleted;
-            Author.LastUpdatedOn= DateTime.Now;
+			Author.LastUpdatedById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+			Author.LastUpdatedOn= DateTime.Now;
             _context.SaveChanges();
             return Ok(Author.LastUpdatedOn.ToString());
         }
