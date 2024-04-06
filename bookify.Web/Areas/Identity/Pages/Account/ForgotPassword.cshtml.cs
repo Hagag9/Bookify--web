@@ -21,11 +21,13 @@ namespace bookify.Web.Areas.Identity.Pages.Account
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IEmailSender _emailSender;
+        private readonly IEmailBodyBuilder _emailBodyBuilder;
 
-        public ForgotPasswordModel(UserManager<ApplicationUser> userManager, IEmailSender emailSender)
+        public ForgotPasswordModel(UserManager<ApplicationUser> userManager, IEmailSender emailSender, IEmailBodyBuilder emailBodyBuilder)
         {
             _userManager = userManager;
             _emailSender = emailSender;
+            _emailBodyBuilder = emailBodyBuilder;
         }
 
         /// <summary>
@@ -70,11 +72,16 @@ namespace bookify.Web.Areas.Identity.Pages.Account
                     pageHandler: null,
                     values: new { area = "Identity", code },
                     protocol: Request.Scheme);
-
+                var body = _emailBodyBuilder.GetEmailBody(
+                                                    "https://res.cloudinary.com/ahagag/image/upload/v1712359686/icon-positive-vote-2_gpjp26.png",
+                                                    $"Hey {user.FullName}, ",
+                                                          "please click the bellow button to reset your password",
+                                                          $"{HtmlEncoder.Default.Encode(callbackUrl!)}",
+                                                          "Reset Password"
+                                                          );
                 await _emailSender.SendEmailAsync(
                     Input.Email,
-                    "Reset Password",
-                    $"Please reset your password by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    "Reset Password",body);
 
                 return RedirectToPage("./ForgotPasswordConfirmation");
             }

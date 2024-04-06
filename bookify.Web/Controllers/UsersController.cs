@@ -1,5 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using System.Security.Claims;
+using System.Text;
+using System.Text.Encodings.Web;
 
 namespace bookify.Web.Controllers
 {
@@ -8,16 +12,27 @@ namespace bookify.Web.Controllers
 	{
 		private readonly UserManager<ApplicationUser> _userManager;
 		private readonly RoleManager<IdentityRole> _roleManager;
+		private readonly IEmailSender _emailSender;
+		private readonly IWebHostEnvironment _webHostEnviroment;
 		private readonly IMapper _mapper;
+        private readonly IEmailBodyBuilder _emailBodyBuilder;
 
-		public UsersController(UserManager<ApplicationUser> userManager, IMapper mapper, RoleManager<IdentityRole> roleManager)
-		{
-			_userManager = userManager;
-			_mapper = mapper;
-			_roleManager = roleManager;
-		}
+        public UsersController(UserManager<ApplicationUser> userManager,
+            RoleManager<IdentityRole> roleManager,
+            IEmailSender emailSender,
+            IWebHostEnvironment webHostEnviroment,
+            IMapper mapper,
+            IEmailBodyBuilder emailBodyBuilder)
+        {
+            _userManager = userManager;
+            _roleManager = roleManager;
+            _emailSender = emailSender;
+            _webHostEnviroment = webHostEnviroment;
+            _mapper = mapper;
+            _emailBodyBuilder = emailBodyBuilder;
+        }
 
-		public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index()
 		{
 			var users= await _userManager.Users.ToListAsync();
 			var viewModel=_mapper.Map<IEnumerable<UserViewModel>>(users);
@@ -54,6 +69,22 @@ namespace bookify.Web.Controllers
 			if (result.Succeeded) 
 			{
 				await _userManager.AddToRolesAsync(user, model.SelectedRoles);
+
+				var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+				code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+				var callbackUrl = Url.Page(
+					"/Account/ConfirmEmail",
+					pageHandler: null,
+					values: new { area = "Identity", userId = user.Id, code = code},
+					protocol: Request.Scheme);
+
+				var body = _emailBodyBuilder.GetEmailBody("https://res.cloudinary.com/ahagag/image/upload/v1712148396/icon-positive-vote-1_o1bunw.png",
+                    $"Hey {user.FullName}, thanks for joining us!",
+					"please confirm your email",
+					$"{HtmlEncoder.Default.Encode(callbackUrl!)}",
+					"Active Account");
+				await _emailSender.SendEmailAsync(user.Email, "Confirm your email",body);
+
 				return PartialView("_UserRow",_mapper.Map<UserViewModel>(user));
 			}
 			return BadRequest(string.Join(',',result.Errors.Select(e=>e.Description)));
@@ -97,6 +128,7 @@ namespace bookify.Web.Controllers
 					await _userManager.RemoveFromRolesAsync(user, CurrentRoles);
 					await _userManager.AddToRolesAsync(user, model.SelectedRoles);
 				}
+				await _userManager.UpdateSecurityStampAsync(user);
 				return PartialView("_UserRow", _mapper.Map<UserViewModel>(user));
 			}	
 			return BadRequest(string.Join(',', result.Errors.Select(e => e.Description)));			
@@ -111,8 +143,10 @@ namespace bookify.Web.Controllers
 			user.IsDeleted = !user.IsDeleted;
 			user.LastUpdatedOn = DateTime.Now;
 			user.LastUpdatedById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
-			await _userManager.UpdateAsync(user);
 
+			await _userManager.UpdateAsync(user);
+			if (user.IsDeleted)
+				await _userManager.UpdateSecurityStampAsync(user);
 			return Ok(user.LastUpdatedOn.ToString());
 		}
 		[AjaxOnly]
@@ -147,6 +181,18 @@ namespace bookify.Web.Controllers
 			user.PasswordHash=currentPasswordHash;
 			await _userManager.UpdateAsync(user);
 			return BadRequest(string.Join(',', result.Errors.Select(e => e.Description)));
+		}
+		public async Task<IActionResult> Unlock(string id)
+		{
+			var user = await _userManager.FindByIdAsync(id);
+			if (user is null)
+				return NotFound();
+
+			var isLocked= await _userManager.IsLockedOutAsync(user);
+			if(isLocked)
+				await _userManager.SetLockoutEndDateAsync(user,null);
+
+			return Ok();
 		}
 		public async Task<IActionResult> AllowUserName(UserFormViewModel model)
 		{

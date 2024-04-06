@@ -12,3 +12,4 @@ global using bookify.Web.Settings;
 global using Microsoft.AspNetCore.Identity;
 global using Microsoft.AspNetCore.Authorization;
 global using System.Security.Claims;
+global using bookify.Web.Services;
