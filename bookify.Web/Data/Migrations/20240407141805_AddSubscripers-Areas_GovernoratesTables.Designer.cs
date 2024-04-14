@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using bookify.Web.Data;
 
@@ -11,9 +12,10 @@ using bookify.Web.Data;
 namespace bookify.Web.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240407141805_AddSubscripers-Areas_GovernoratesTables")]
+    partial class AddSubscripersAreas_GovernoratesTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -419,7 +421,7 @@ namespace bookify.Web.Data.Migrations
                     b.ToTable("Governorates");
                 });
 
-            modelBuilder.Entity("bookify.Web.Core.Models.Subscriber", b =>
+            modelBuilder.Entity("bookify.Web.Core.Models.Subscriper", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -515,7 +517,7 @@ namespace bookify.Web.Data.Migrations
                     b.HasIndex("NationalId")
                         .IsUnique();
 
-                    b.ToTable("Subscribers");
+                    b.ToTable("Subscripers");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -784,7 +786,7 @@ namespace bookify.Web.Data.Migrations
                     b.Navigation("LastUpdatedBy");
                 });
 
-            modelBuilder.Entity("bookify.Web.Core.Models.Subscriber", b =>
+            modelBuilder.Entity("bookify.Web.Core.Models.Subscriper", b =>
                 {
                     b.HasOne("bookify.Web.Core.Models.Area", "Area")
                         .WithMany()

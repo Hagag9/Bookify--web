@@ -19,5 +19,7 @@
 		public const string OnlyNumbersAndLetters = "Only Arabic/English letters or digits are allowed.";
 		public const string DenySpecialCharacters = "Special characters are not allowed.";
 		public const string InvalidMobileNumber = "Invalid mobile number.";
+		public const string InvalidNationalId = "Invalid national ID.";
+		public const string EmptyImage = "Please select an image.";
 	}
 }

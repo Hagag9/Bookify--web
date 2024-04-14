@@ -191,7 +191,7 @@ namespace bookify.Web.Controllers
 				model.ImageThumbnailUrl=book.ImageUrl;
 			}
 			book = _mapper.Map(model,book);
-			book.LastUpdatedById = book.CreatedById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+			book.LastUpdatedById =User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
 			book.LastUpdatedOn= DateTime.Now;
 			//book.ImagePublicId = imageId;	
 		
