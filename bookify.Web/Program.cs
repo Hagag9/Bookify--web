@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using bookify.Web.Data;
 using bookify.Web.Helpers;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.DataProtection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +26,7 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.Password.RequiredLength = 8;
     options.User.RequireUniqueEmail = true;
 });
+builder.Services.AddDataProtection().SetApplicationName(nameof(bookify));
 
 builder.Services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>,ApplicationUserClaimsPrinciplalFactory>();
 builder.Services.AddControllersWithViews();

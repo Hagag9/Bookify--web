@@ -6,13 +6,13 @@
 
 <div class="card shadow-sm">
     <div class="card-header">
-        <h3 class="card-title">@(Model.Id.Equals(0) ? "Add" : "Edit") Subscriber</h3>
+        <h3 class="card-title">@(string.IsNullOrEmpty(Model.Key) ? "Add" : "Edit") Subscriber</h3>
     </div>
     <div class="card-body">
         <form method="post" asp-controller="Subscribers" enctype="multipart/form-data" id="Form">
-            @if (Model.Id > 0)
+            @if (!string.IsNullOrEmpty(Model.Key))
             {
-                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="Key" />
             }
             <div class="row mb-6">
                 <label class="col-lg-4 col-form-label fw-semibold fs-6" asp-for="Image"></label>
