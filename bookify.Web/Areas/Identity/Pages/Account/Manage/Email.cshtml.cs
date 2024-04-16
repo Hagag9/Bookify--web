@@ -128,14 +128,15 @@ namespace bookify.Web.Areas.Identity.Pages.Account.Manage
                     values: new { area = "Identity", userId = userId, email = Input.NewEmail, code = code },
                     protocol: Request.Scheme);
 
-                var body = _emailBodyBuilder.GetEmailBody(
-                                          "https://res.cloudinary.com/ahagag/image/upload/v1712148396/icon-positive-vote-1_o1bunw.png",
-                                          $"Hey {user.FullName},",
-                                                "please confirm your email",
-                                                $"{HtmlEncoder.Default.Encode(callbackUrl!)}",
-                                                "Confirm Email"
-                                                );
-
+                var placeHolders = new Dictionary<string, string>()
+                {
+                    {"imageUrl","https://res.cloudinary.com/ahagag/image/upload/v1712148396/icon-positive-vote-1_o1bunw.png"},
+                    {"header", $"Hey {user.FullName}, "},
+                    {"body" ,"please confirm your email"},
+                    {"url", $"{HtmlEncoder.Default.Encode(callbackUrl!)}"},
+                    {"linkTitle",  "Confirm Email"}
+                };
+                var body = _emailBodyBuilder.GetEmailBody(EmailTemplates.Email, placeHolders);
                 await _emailSender.SendEmailAsync(
                     Input.NewEmail,
                     "Confirm your email",
@@ -172,14 +173,15 @@ namespace bookify.Web.Areas.Identity.Pages.Account.Manage
                 pageHandler: null,
                 values: new { area = "Identity", userId = userId, code = code },
                 protocol: Request.Scheme);
-
-            var body = _emailBodyBuilder.GetEmailBody(
-                                                      "https://res.cloudinary.com/ahagag/image/upload/v1712148396/icon-positive-vote-1_o1bunw.png",
-                                                      $"Hey {user.FullName},",
-                                                            "please confirm your email",
-                                                            $"{HtmlEncoder.Default.Encode(callbackUrl!)}",
-                                                            "Confirm Email"
-                                                            );
+            var placeHolders = new Dictionary<string, string>()
+                {
+                    {"imageUrl","https://res.cloudinary.com/ahagag/image/upload/v1712148396/icon-positive-vote-1_o1bunw.png"},
+                    {"header", $"Hey {user.FullName}, "},
+                    {"body" ,"please confirm your email"},
+                    {"url", $"{HtmlEncoder.Default.Encode(callbackUrl!)}"},
+                    {"linkTitle","Confirm Email"}
+                };
+            var body = _emailBodyBuilder.GetEmailBody(EmailTemplates.Email, placeHolders);
             await _emailSender.SendEmailAsync(
                 email,
                 "Confirm your email",

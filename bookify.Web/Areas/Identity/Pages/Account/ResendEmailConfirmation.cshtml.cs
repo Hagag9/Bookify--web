@@ -82,14 +82,15 @@ namespace bookify.Web.Areas.Identity.Pages.Account
                 pageHandler: null,
                 values: new { userId = userId, code = code },
                 protocol: Request.Scheme);
-
-            var body = _emailBodyBuilder.GetEmailBody(
-                                                      "https://res.cloudinary.com/ahagag/image/upload/v1712148396/icon-positive-vote-1_o1bunw.png",
-                                                      $"Hey {user.FullName}, thanks for joining us!",
-                                                            "please confirm your email",
-                                                            $"{HtmlEncoder.Default.Encode(callbackUrl!)}",
-                                                            "Active Account"
-                                                            );
+            var placeHolders = new Dictionary<string, string>()
+                {
+                    {"imageUrl","https://res.cloudinary.com/ahagag/image/upload/v1712148396/icon-positive-vote-1_o1bunw.png"},
+                    {"header",$"Hey {user.FullName}, thanks for joining us!"},
+                    {"body" , "please confirm your email"},
+                    {"url", $"{HtmlEncoder.Default.Encode(callbackUrl!)}"},
+                    {"linkTitle", "Active Account"}
+                };
+            var body = _emailBodyBuilder.GetEmailBody(EmailTemplates.Email, placeHolders);
             await _emailSender.SendEmailAsync(user.Email, "Confirm your email",body);
 
             ModelState.AddModelError(string.Empty, "Verification email sent. Please check your email.");

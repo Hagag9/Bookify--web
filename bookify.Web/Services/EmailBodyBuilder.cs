@@ -9,18 +9,17 @@
             _webHostEnviroment = webHostEnviroment;
         }
 
-        public string GetEmailBody(string imageUrl, string header, string body, string url, string linkTitle)
+        public string GetEmailBody(string template , Dictionary<string,string> placeholders)
         {
-            var filePath = $"{_webHostEnviroment.WebRootPath}/templates/email.html";
+            var filePath = $"{_webHostEnviroment.WebRootPath}/templates/{template}.html";
             StreamReader str = new(filePath);
-            var template = str.ReadToEnd();
+            var templateContent = str.ReadToEnd();
             str.Close();
-            return template
-                .Replace("[imageUrl]", imageUrl)
-                .Replace("[header]", header)
-                .Replace("[body]", body)
-                .Replace("[url]", url)
-                .Replace("[linkTitle]", linkTitle);
+
+            foreach (var placeholder in placeholders)
+                templateContent= templateContent.Replace($"[{placeholder.Key}]",placeholder.Value);
+
+            return templateContent;
         }
     }
 }
