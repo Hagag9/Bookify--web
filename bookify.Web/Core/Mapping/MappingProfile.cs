@@ -54,7 +54,8 @@ namespace bookify.Web.Core.Mapping
 			CreateMap<Subscriber, SubscriberSearchResultViewModel>()
 				.ForMember(dest => dest.FullName, opt => opt.MapFrom(src =>$"{src.FirstName} {src.LastName}"));
 
-
-		}
+			//subscribtions
+			CreateMap<Subscription, SubscriptionViewModel>();
+        }
     }
 }

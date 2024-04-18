@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using bookify.Web.Data;
 
@@ -11,9 +12,10 @@ using bookify.Web.Data;
 namespace bookify.Web.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240416162723_AddSubscribtionsTable")]
+    partial class AddSubscribtionsTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -518,7 +520,7 @@ namespace bookify.Web.Data.Migrations
                     b.ToTable("Subscribers");
                 });
 
-            modelBuilder.Entity("bookify.Web.Core.Models.Subscription", b =>
+            modelBuilder.Entity("bookify.Web.Core.Models.Subscribtion", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -547,7 +549,7 @@ namespace bookify.Web.Data.Migrations
 
                     b.HasIndex("SubscriberId");
 
-                    b.ToTable("Subscriptions");
+                    b.ToTable("Subscribtions");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -847,14 +849,14 @@ namespace bookify.Web.Data.Migrations
                     b.Navigation("LastUpdatedBy");
                 });
 
-            modelBuilder.Entity("bookify.Web.Core.Models.Subscription", b =>
+            modelBuilder.Entity("bookify.Web.Core.Models.Subscribtion", b =>
                 {
                     b.HasOne("bookify.Web.Core.Models.ApplicationUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById");
 
                     b.HasOne("bookify.Web.Core.Models.Subscriber", "Subscriber")
-                        .WithMany("Subscriptions")
+                        .WithMany("Subscribtions")
                         .HasForeignKey("SubscriberId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -939,7 +941,7 @@ namespace bookify.Web.Data.Migrations
 
             modelBuilder.Entity("bookify.Web.Core.Models.Subscriber", b =>
                 {
-                    b.Navigation("Subscriptions");
+                    b.Navigation("Subscribtions");
                 });
 #pragma warning restore 612, 618
         }
