@@ -40,8 +40,8 @@ namespace bookify.Web.Controllers
 		[HttpPost]
 		public IActionResult GetBooks()
 		{
-			var skip = int.Parse(Request.Form["start"]);
-			var pageSize = int.Parse(Request.Form["length"]);
+			var skip = int.Parse(Request.Form["start"]!);
+			var pageSize = int.Parse(Request.Form["length"]!);
 
 			var searchValue = Request.Form["search[value]"];
 
@@ -54,7 +54,7 @@ namespace bookify.Web.Controllers
 													.ThenInclude(c => c.Category);
 
 			if (!string.IsNullOrEmpty(searchValue))
-				books = books.Where(b => b.Title.Contains(searchValue) || b.Author!.Name.Contains(searchValue));
+				books = books.Where(b => b.Title.Contains(searchValue!) || b.Author!.Name.Contains(searchValue!));
 
 			books = books.OrderBy($"{sortCol} {sortColDir}");
 			var data = books.Skip(skip).Take(pageSize).ToList();

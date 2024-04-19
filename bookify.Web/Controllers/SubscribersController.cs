@@ -1,9 +1,7 @@
-﻿using Microsoft.AspNetCore.DataProtection;
+﻿using Hangfire;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
-using System.Text.Encodings.Web;
-using WhatsAppCloudApi;
-using WhatsAppCloudApi.Services;
 
 namespace bookify.Web.Controllers
 {
@@ -113,10 +111,11 @@ namespace bookify.Web.Controllers
                     {"header", $"Welcome {model.FirstName},"},
                     {"body" , "thanks for joining Bookify 😍"},
                 };
+			
             var body = _emailBodyBuilder.GetEmailBody(EmailTemplates.Notification, placeHolders);
-			await _emailSender.SendEmailAsync(model.Email,"Welcome to Bookify",body);
-            //send welcome WhatsApp message 
-            if (model.HasWhatsApp)
+			BackgroundJob.Enqueue(() => _emailSender.SendEmailAsync(model.Email, "Welcome to Bookify", body));
+			//send welcome WhatsApp message 
+			if (model.HasWhatsApp)
 			{
                 var components = new List<WhatsAppComponent>()
             {
@@ -130,7 +129,7 @@ namespace bookify.Web.Controllers
                 }
             };
 				var mobileNumber = _webHostEnvironment.IsDevelopment() ? "01227232423" : model.MobileNumber;
-				await _whatsAppClient.SendMessage($"2{mobileNumber}", WhatsAppLanguageCode.English_US, WhatsAppTemplates.WelcomeMessage, components);
+				BackgroundJob.Enqueue(() => _whatsAppClient.SendMessage($"2{mobileNumber}", WhatsAppLanguageCode.English_US, WhatsAppTemplates.WelcomeMessage, components));
             }
             var subscriberId= _dataProtector.Protect(subscriber.Id.ToString());
 			return RedirectToAction(nameof(Details), new {id = subscriberId});
@@ -186,7 +185,7 @@ namespace bookify.Web.Controllers
 		}
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> RenewSubscription(string sKey)
+		public IActionResult RenewSubscription(string sKey)
 		{
 			var subscriberId= int.Parse(_dataProtector.Unprotect(sKey));
 			var subscriber = _context.Subscribers.Include(s=>s.Subscriptions).FirstOrDefault(s=>s.Id==subscriberId);
@@ -215,7 +214,8 @@ namespace bookify.Web.Controllers
 					{"body" , $"Your subscription has been renewed through {newSubscription.EndDate.ToString("d MMM, yyyy")} 🎉🎉"},
 				};
 			var body = _emailBodyBuilder.GetEmailBody(EmailTemplates.Notification, placeHolders);
-			await _emailSender.SendEmailAsync(subscriber.Email, "Bookify Subscription Renewal", body);
+			BackgroundJob.Enqueue(() => _emailSender.SendEmailAsync(subscriber.Email, "Bookify Subscription Renewal", body));
+		
 			//send welcome WhatsApp message 
 			if (subscriber.HasWhatsApp)
 			{
@@ -232,7 +232,7 @@ namespace bookify.Web.Controllers
 				}
 			};
 				var mobileNumber = _webHostEnvironment.IsDevelopment() ? "01227232423" : subscriber.MobileNumber;
-				await _whatsAppClient.SendMessage($"2{mobileNumber}", WhatsAppLanguageCode.English_US, WhatsAppTemplates.RenewSubscription, components);
+				BackgroundJob.Enqueue(() => _whatsAppClient.SendMessage($"2{mobileNumber}", WhatsAppLanguageCode.English_US, WhatsAppTemplates.RenewSubscription, components));
 			}
 			return PartialView("_SubscriptionRow", _mapper.Map<SubscriptionViewModel>(newSubscription));
 		}
@@ -272,6 +272,8 @@ namespace bookify.Web.Controllers
 			bool isAllow = subscriber is null || subscriber.Id == SubscriberId;
 			return Json(isAllow);
 		}
+
+
         private SubscriberFormViewModel PopulateViewModel(SubscriberFormViewModel? model = null)
         {
 			SubscriberFormViewModel viewModel =model is null ? new SubscriberFormViewModel() : model;   
