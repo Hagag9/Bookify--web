@@ -20,10 +20,10 @@ namespace bookify.Web.Tasks
 			_emailBodyBuilder = emailBodyBuilder;
 			_emailSender = emailSender;
 		}
-		public async Task prepareExpirationAlert()
+		public async Task PrepareExpirationAlert()
 		{
 			var subscribers = _context.Subscribers.Include(s => s.Subscriptions)
-				.Where(s => s.Subscriptions.OrderByDescending(x => x.EndDate).First().EndDate == DateTime.Today.AddDays(5)).ToList();
+				.Where(s => !s.IsBlackListed && s.Subscriptions.OrderByDescending(x => x.EndDate).First().EndDate == DateTime.Today.AddDays(5)).ToList();
 
 			foreach (var subscriber in subscribers)
 			{
@@ -55,6 +55,39 @@ namespace bookify.Web.Tasks
 					var mobileNumber = _webHostEnvironment.IsDevelopment() ? "01227232423" : subscriber.MobileNumber;
 					await _whatsAppClient.SendMessage($"2{mobileNumber}", WhatsAppLanguageCode.English, WhatsAppTemplates.SubscriptionExpiration, components);
 				}
+			}
+		}
+
+		public async Task RentalsExpirationAlert()
+		{
+			var tomorrow = DateTime.Today.AddDays(1);
+
+			var rentals = _context.Rentals.Include(r => r.Subscriber)
+				.Include(r => r.RentalCopies)
+				.ThenInclude(c => c.BookCopy)
+				.ThenInclude(bc => bc!.Book)
+				.Where(r => r.RentalCopies.Any(r => r.EndDate.Date == tomorrow && !r.ReturnDate.HasValue))
+				.ToList();
+
+			foreach (var rental in rentals)
+			{
+				var expiredCopies = rental.RentalCopies.Where( c=>c.EndDate.Date == tomorrow).ToList();
+
+				var message = $"Your rental for the below book(s) will be expired by tomorrow {tomorrow.ToString("dd MMM,yyyy")} 💔 :";
+				message += "<ul>";
+				foreach (var copy in expiredCopies)
+				{
+					message += $"<li>{copy.BookCopy!.Book!.Title}</li>";
+				}
+				message += "</ul>";
+				var placeHolders = new Dictionary<string, string>()
+				{
+					{"imageUrl","https://res.cloudinary.com/ahagag/image/upload/v1713545232/calendar_zfohjc_zbrzjr.png"},
+					{"header", $"Hello {rental.Subscriber!.FirstName},"},
+					{"body" ,message}
+				};
+				var body = _emailBodyBuilder.GetEmailBody(EmailTemplates.Notification, placeHolders);
+				await _emailSender.SendEmailAsync(rental.Subscriber.Email, "Bookify Rental Expiration 🔔", body);
 			}
 		}
 	}

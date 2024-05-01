@@ -15,6 +15,8 @@ namespace bookify.Web.Data
 		public DbSet<BookCopy> BookCopies { get; set; }
 		public DbSet<Category> Categories { get; set; }
 		public DbSet<Governorate> Governorates { get; set; }
+		public DbSet<Rental> Rentals { get; set; }
+		public DbSet<RentalCopy> RentalCopies { get; set; }
 		public DbSet<Subscriber> Subscribers { get; set; }
 		public DbSet<Subscription> Subscriptions { get; set; }
 
@@ -22,7 +24,12 @@ namespace bookify.Web.Data
 		{
 			builder.HasSequence<int>("SerialNumber", schema: "shared").StartsAt(1000001);
 			builder.Entity<BookCopy>().Property(e => e.SerialNumber).HasDefaultValueSql("NEXT VALUE FOR shared.SerialNumber");
-			builder.Entity<BookCategory>().HasKey(e => new { e.BookId, e.CategoryId });
+
+			builder.Entity<BookCategory>().HasKey(e => new { e.BookId , e.CategoryId });
+			builder.Entity<RentalCopy>().HasKey(r => new { r.RentalId , r.BookCopyId });
+			builder.Entity<Rental>().HasQueryFilter( r =>!r.IsDeleted);
+			builder.Entity<RentalCopy>().HasQueryFilter( r =>!r.Rental!.IsDeleted);
+
 			var cascadeFks = builder.Model.GetEntityTypes().SelectMany(t => t.GetForeignKeys())
 				.Where(fk => fk.DeleteBehavior == DeleteBehavior.Cascade && !fk.IsOwnership);
 			foreach (var fk in cascadeFks)

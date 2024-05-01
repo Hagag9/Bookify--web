@@ -84,23 +84,23 @@
                         <div class="pb-5 fs-6">
                             <!--begin::Details item-->
                             <div class="fw-bold mt-5">Account ID</div>
-                            <div class="text-gray-600">ID-@Model.Id</div>
+                            <div class="text-gray-600 text-hover-primary">ID-@Model.Id</div>
                             <!--begin::Details item-->
                             <!--begin::Details item-->
                             <div class="fw-bold mt-5">National ID</div>
-                           <div class="text-gray-600">@Model.NationalId</div>
+                           <div class="text-gray-600 text-hover-primary">@Model.NationalId</div>
                             <!--begin::Details item-->
                              <!--begin::Details item-->
                             <div class="fw-bold mt-5">Date Of Birth</div>
-                           <div class="text-gray-600">@Model.DateOfBirth.ToShortDateString()</div>
+                           <div class="text-gray-600 text-hover-primary">@Model.DateOfBirth.ToString("dd MMM,yyyy")</div>
                             <!--begin::Details item-->
                             <!--begin::Details item-->
                             <div class="fw-bold mt-5">Mobile Number </div>
-                            <div class="text-gray-600">@Model.MobileNumber</div>
+                            <div class="text-gray-600 text-hover-primary">@Model.MobileNumber</div>
                             <!--begin::Details item-->
                             <!--begin::Details item-->
                             <div class="fw-bold mt-5">Delivery Address</div>
-                            <div class="text-gray-600">@Model.Address, <br>@Model.Area<br>@Model.Governorate</div>
+                            <div class="text-gray-600 text-hover-primary">@Model.Address, <br>@Model.Area<br>@Model.Governorate</div>
                             <!--begin::Details item-->
 
                         </div>
@@ -122,7 +122,7 @@
                     <!--end:::Tab item-->
                     <!--begin:::Tab item-->
                     <li class="nav-item" role="presentation">
-                        <a class="nav-link text-active-primary pb-4" data-bs-toggle="tab" href="#kt_ecommerce_customer_general" aria-selected="false" tabindex="-1" role="tab">General Settings</a>
+                        <a class="nav-link text-active-primary pb-4" data-bs-toggle="tab" href="#Rentals" aria-selected="false" tabindex="-1" role="tab">Rentals</a>
                     </li>
                     <!--end:::Tab item-->
                 </ul>
@@ -139,7 +139,7 @@
                                     <div class="card-header border-0">
                                         <!--begin::Card title-->
                                         <div class="card-title">
-                                            <h2 class="fw-bold">Reward Points</h2>
+                                            <h2 class="fw-bold">Number of Rentals</h2>
                                         </div>
                                         <!--end::Card title-->
                                     </div>
@@ -156,10 +156,10 @@
                                                 </span>
                                                 <!--end::Svg Icon-->
                                                 <div class="ms-2">
-                                                    4,571 <span class="text-muted fs-4 fw-semibold">Points earned</span>
+                                                    @Model.Rentals.Sum(r=>r.NumberOfCopies) 
                                                 </div>
                                             </div>
-                                            <div class="fs-7 fw-normal text-muted">Earn reward points with every purchase.</div>
+                                            <div class="fs-7 fw-normal text-muted">Total number of copies.</div>
                                         </div>
                                     </div>
                                     <!--end::Card body-->
@@ -251,18 +251,30 @@
                     </div>
                     <!--end:::Tab pane-->
                     <!--begin:::Tab pane-->
-                    <div class="tab-pane fade" id="kt_ecommerce_customer_general" role="tabpanel">
+                    <div class="tab-pane fade" id="Rentals" role="tabpanel">
                         <!--begin::Card-->
                         <div class="card pt-4 mb-6 mb-xl-9">
                             <!--begin::Card header-->
-                            <div class="card-header border-0">
-                                <!--begin::Card title-->
-                                <div class="card-title">
-                                    <h2>Profile</h2>
-                                </div>
-                                <!--end::Card title-->
+                            <div class="card-header border-0 pt-5">
+                                <h3 class="card-title align-items-start flex-column">
+                                    <span class="card-label fw-bold fs-3 mb-1">Rentals</span>
+                                </h3>
+                                @if (!Model.IsBlackListed )
+                                {
+                                    <div id="RentalButton" class="card-toolbar @(lastSubscription.EndDate < DateTime.Today.AddDays((int)RentalsConfigurations.Rentalduration) ? "d-none" : string.Empty)">
+                                        <a asp-controller="Rentals" asp-action="Create" asp-route-sKey="@Model.Key" class="btn btn-sm btn-light-primary" >
+                                            <i class="bi bi-plus-square-fill"></i>
+                                            Add Rental
+                                        </a>
+                                    </div>
+                                }
                             </div>
                             <!--end::Card header-->
+                            <!--begin::Card body-->
+                             <div class="card-body pt-0 pb-5">
+                                <partial name="_Rentals" model="@Model.Rentals"/>
+                             </div>
+                             <!--end::Card body-->
                         </div>
                         <!--end::Card-->
                     </div>
@@ -280,7 +292,7 @@
 
 @section Scripts
 {
-<script src="~/js/renew.js" asp-append-version="true"></script>
+    <script src="~/js/subscriber-details.js" asp-append-version="true"></script>
 }
 @section Plugins
  {

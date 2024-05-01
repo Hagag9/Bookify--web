@@ -85,7 +85,7 @@ await DefaultUsers.SeedAdminUserAsync(userManager);
 app.UseHangfireDashboard("/hangfire",new DashboardOptions
 {
     DashboardTitle = "Bookify Dashboard",
-    IsReadOnlyFunc = (DashboardContext context) => true,
+   // IsReadOnlyFunc = (DashboardContext context) => true,
     Authorization = new IDashboardAuthorizationFilter[] 
     {
         new HangfireAuthorizationFilter("AdminOnly")
@@ -98,7 +98,8 @@ var emailBodyBuilder = scope.ServiceProvider.GetRequiredService<IEmailBodyBuilde
 var emailSender = scope.ServiceProvider.GetRequiredService<IEmailSender>();
 
 var hangfireTasks = new HangfireTasks(dbContext, webHostEnvironment, whatsAppClient, emailBodyBuilder, emailSender);
-RecurringJob.AddOrUpdate("Exp_Alert",() => hangfireTasks.prepareExpirationAlert(), "0 14 * * *");
+RecurringJob.AddOrUpdate("Exp_Alert",() => hangfireTasks.PrepareExpirationAlert(), "0 14 * * *");
+RecurringJob.AddOrUpdate("Exp_RentalAlert",() => hangfireTasks.RentalsExpirationAlert(), "0 14 * * *");
 
 
 app.MapControllerRoute(

@@ -17,7 +17,12 @@ namespace bookify.Web.Controllers
         private readonly IEmailBodyBuilder _emailBodyBuilder;
         private readonly IEmailSender _emailSender;
 
-        public SubscribersController(ApplicationDbContext context, IWebHostEnvironment webHostEnvironment, IDataProtectionProvider dataProtector, IMapper mapper, IWhatsAppClient whatsAppClient, IImageService imageService, IEmailBodyBuilder emailBodyBuilder, IEmailSender emailSender)
+        public SubscribersController(ApplicationDbContext context,
+			IWebHostEnvironment webHostEnvironment,
+			IDataProtectionProvider dataProtector,
+			IMapper mapper, IWhatsAppClient whatsAppClient, 
+			IImageService imageService, IEmailBodyBuilder emailBodyBuilder, 
+			IEmailSender emailSender)
         {
             _context = context;
             _webHostEnvironment = webHostEnvironment;
@@ -59,6 +64,8 @@ namespace bookify.Web.Controllers
                 .Include(s=>s.Governorate)
 				.Include(s=>s.Area)
 				.Include(s=>s.Subscriptions)
+				.Include(s=>s.Rentals)
+				.ThenInclude(r=>r.RentalCopies)
 				.SingleOrDefault(s=>s.Id == SubscriberId);
 
 			if(subscriber is null)
