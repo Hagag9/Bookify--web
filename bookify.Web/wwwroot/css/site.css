@@ -38,6 +38,9 @@ body {
 .w-fit-content{
     width:fit-content;
 }
+.satisfy-regular {
+    font-family: "Satisfy", cursive;
+}
 /*End custom styles */
 .h-70px{
     height:70px !important;
