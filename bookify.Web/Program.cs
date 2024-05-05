@@ -12,6 +12,7 @@ using WhatsAppCloudApi.Extensions;
 using Hangfire;
 using Hangfire.Dashboard;
 using bookify.Web.Tasks;
+using HashidsNet;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,6 +42,7 @@ builder.Services.AddExpressiveAnnotations();
 builder.Services.AddTransient<IImageService, ImageService>();
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 builder.Services.AddTransient<IEmailBodyBuilder, EmailBodyBuilder>();
+builder.Services.AddSingleton<IHashids>(_ =>new Hashids("f1nd1ngn3m0",minHashLength:11));
 builder.Services.AddWhatsAppApiClient(builder.Configuration);
 builder.Services.AddHangfire(x => x.UseSqlServerStorage(connectionString));
 builder.Services.AddHangfireServer();

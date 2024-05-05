@@ -21,6 +21,26 @@ body {
     padding-bottom: 0.025rem;
 }
 /*End Override Theme */
+/* Start Override typeahead */
+.twitter-typeahead {
+    width: 100%;
+}
+
+.tt-suggestion {
+    font-size: 16px;
+}
+
+.tt-suggestion:not(:last-child) {
+border-bottom: 1px dashed #dcdcdc;
+}
+
+/*.tt-suggestion:hover,
+.tt-suggestion:focus {
+    background-color: #dcdcdc;
+}*/
+
+
+/* End Override typeahead */
 
 /*start custom styles */
 .dt-spinner + div{
@@ -41,7 +61,36 @@ body {
 .satisfy-regular {
     font-family: "Satisfy", cursive;
 }
-/*End custom styles */
+.page-bg {
+    background-size: cover;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-image: url('../assets/images/bg9-dark.jpg');
+}
+
 .h-70px{
     height:70px !important;
 }
+.mh-450px {
+    min-height: 450px;
+}
+.launcher .sidebar {
+    position: fixed;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    width: 425px;
+    top: 50px;
+    right: 50px;
+    bottom: 50px;
+    background-color: rgba(19, 0, 97, .3);
+    border-radius: 1.75rem;
+}
+.sidebar-enabled {
+    padding-right: 475px;
+}
+.transform-x{
+    transform: scaleX(-1);
+}
+/*End custom styles */
