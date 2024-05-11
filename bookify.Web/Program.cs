@@ -13,6 +13,7 @@ using Hangfire;
 using Hangfire.Dashboard;
 using bookify.Web.Tasks;
 using HashidsNet;
+using ViewToHTML.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -52,6 +53,7 @@ builder.Services.Configure<AuthorizationOptions>(options => options.AddPolicy("A
     policy.RequireAuthenticatedUser();
     policy.RequireRole(AppRoles.Admin);
 }));
+builder.Services.AddViewToHTML();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

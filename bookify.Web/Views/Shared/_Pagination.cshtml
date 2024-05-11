@@ -1,0 +1,51 @@
+﻿@model PaginationViewModel
+<ul class="pagination pagination-circle pagination-outline justify-content-start mb-4">
+	<li class="page-item first @(Model.HasPreviousPage?string.Empty:"disabled") m-1">
+		<a href="#" class="page-link px-0" data-page-number="1">
+			<i class="las la-angle-double-left"></i>
+		</a>
+	</li>
+	<li class="page-item previous @(Model.HasPreviousPage?string.Empty:"disabled") m-1">
+		<a href="#" class="page-link px-0" data-page-number="@(Model.PageNumber - 1)">
+			<i class="las la-angle-left"></i>
+		</a>
+	</li>
+	@if(Model.Start >1)
+	{
+		<li class="page-item  disabled m-1">
+		<a href="#" class="page-link px-0">
+			<span class="svg-icon svg-icon-2">
+                    ...
+                </span>
+		</a>
+	</li>
+	}
+
+	@for (int i = Model.Start; i <= Model.End; i++)
+	{
+		<li class="page-item m-1 @(Model.PageNumber == i ? "active":string.Empty)">
+			<a href="#" class="page-link" data-page-number="@i">@i</a>
+		</li>
+	}
+
+	@if (Model.End < Model.TotalPages)
+	{
+		<li class="page-item  disabled m-1">
+			<a href="#" class="page-link px-0">
+				<span class="svg-icon svg-icon-2">
+					...
+				</span>
+			</a>
+		</li>
+	}
+	<li class="page-item next m-1 @(Model.HasNextPage?string.Empty:"disabled")">
+		<a href="#" class="page-link px-0" data-page-number="@(Model.PageNumber + 1)">
+			<i class="las la-angle-right"></i>
+		</a>
+	</li>
+	<li class="page-item last m-1 @(Model.HasNextPage?string.Empty:"disabled")">
+		<a href="#" class="page-link px-0" data-page-number="@(Model.TotalPages)">
+			<i class="las la-angle-double-right"></i>
+		</a>
+	</li>
+</ul>

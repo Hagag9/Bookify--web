@@ -16,3 +16,4 @@ global using System.Security.Claims;
 global using bookify.Web.Services;
 global using WhatsAppCloudApi;
 global using WhatsAppCloudApi.Services;
+global using bookify.Web.Core.Utilities;

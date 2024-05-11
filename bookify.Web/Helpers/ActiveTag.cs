@@ -21,7 +21,7 @@ namespace bookify.Web.Helpers
 			if(CurrentControler is  not null && CurrentControler.Equals(ActiveWhen))
 			{
 				var classAttribute = output.Attributes["class"].Value;
-				var Classes = classAttribute == null ? "active" : classAttribute + "active";
+				var Classes = classAttribute == null ? "active" : classAttribute + " active";
 				output.Attributes.SetAttribute("class", Classes);
 			}
 
