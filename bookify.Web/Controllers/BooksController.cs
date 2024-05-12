@@ -37,7 +37,7 @@ namespace bookify.Web.Controllers
 		{
 			return View();
 		}
-		[HttpPost]
+		[HttpPost, IgnoreAntiforgeryToken]
 		public IActionResult GetBooks()
 		{
 			var skip = int.Parse(Request.Form["start"]!);
@@ -83,7 +83,6 @@ namespace bookify.Web.Controllers
 			return View("Form", PopulateViewModel());
 		}
 		[HttpPost]
-		[ValidateAntiForgeryToken]
 		public async Task<IActionResult> Create(BookFormViewModel model)
 		{
 			if (!ModelState.IsValid) 
@@ -120,7 +119,7 @@ namespace bookify.Web.Controllers
 				//	return BadRequest();
 				//}
 			}
-			book.CreatedById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+			book.CreatedById = User.GetUserId();
 			foreach (var category in model.SelectedCategories)
 				book.Categories.Add(new BookCategory { CategoryId = category });
 			_context.Books.Add(book);
@@ -140,7 +139,6 @@ namespace bookify.Web.Controllers
 			return View("Form", PopulateViewModel(viewModel));
 		}
 		[HttpPost]
-		[ValidateAntiForgeryToken]
 		public async Task<IActionResult> Edit(BookFormViewModel model)
 		{
 			if (!ModelState.IsValid)
@@ -191,7 +189,7 @@ namespace bookify.Web.Controllers
 				model.ImageThumbnailUrl=book.ImageUrl;
 			}
 			book = _mapper.Map(model,book);
-			book.LastUpdatedById =User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+			book.LastUpdatedById =User.GetUserId();
 			book.LastUpdatedOn= DateTime.Now;
 			//book.ImagePublicId = imageId;	
 		
@@ -205,14 +203,13 @@ namespace bookify.Web.Controllers
 			return RedirectToAction(nameof(Details), new { id = book.Id });
 		}
 		[HttpPost]
-		[ValidateAntiForgeryToken]
 		public IActionResult ToggleStatus(int id)
 		{
 			var book = _context.Books.Find(id);
 			if (book == null)
 				return NotFound();
 			book.IsDeleted = !book.IsDeleted;
-			book.LastUpdatedById = book.CreatedById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+			book.LastUpdatedById = book.CreatedById = User.GetUserId();
 			book.LastUpdatedOn = DateTime.Now;
 			_context.SaveChanges();
 			return Ok();

@@ -53,7 +53,6 @@ namespace bookify.Web.Controllers
 			return PartialView("_Form", viewModel);
 		}
 		[HttpPost]
-		[ValidateAntiForgeryToken]
 		public async Task<IActionResult> Create(UserFormViewModel model)
 		{
 			if (!ModelState.IsValid)
@@ -63,7 +62,7 @@ namespace bookify.Web.Controllers
 				FullName=model.FullName,
 				UserName = model.UserName,
 				Email = model.Email,
-				CreatedById=User.FindFirst(ClaimTypes.NameIdentifier)!.Value
+				CreatedById=User.GetUserId()
 			};
 			var result =  await _userManager.CreateAsync(user,model.Password);
 			if (result.Succeeded) 
@@ -111,7 +110,6 @@ namespace bookify.Web.Controllers
 			return PartialView("_Form", viewModel);
 		}
 		[HttpPost]
-		[ValidateAntiForgeryToken]
 		public async Task<IActionResult> Edit(UserFormViewModel model)
 		{
 			if (!ModelState.IsValid)
@@ -122,7 +120,7 @@ namespace bookify.Web.Controllers
 
 			user = _mapper.Map(model,user);
 			user.LastUpdatedOn = DateTime.Now;
-			user.LastUpdatedById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+			user.LastUpdatedById = User.GetUserId();
 			var result = await _userManager.UpdateAsync(user);
 			if(result.Succeeded)
 			{
@@ -139,7 +137,6 @@ namespace bookify.Web.Controllers
 			return BadRequest(string.Join(',', result.Errors.Select(e => e.Description)));			
 		}
 		[HttpPost]
-		[ValidateAntiForgeryToken]
 		public async Task<IActionResult> ToggleStatus(string id)
 		{
 			var user = await _userManager.FindByIdAsync(id);
@@ -147,7 +144,7 @@ namespace bookify.Web.Controllers
 				return NotFound();
 			user.IsDeleted = !user.IsDeleted;
 			user.LastUpdatedOn = DateTime.Now;
-			user.LastUpdatedById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+			user.LastUpdatedById = User.GetUserId();
 
 			await _userManager.UpdateAsync(user);
 			if (user.IsDeleted)
@@ -164,7 +161,6 @@ namespace bookify.Web.Controllers
 			return PartialView("_ResetPasswordForm", model);
 		}
 		[HttpPost]
-		[ValidateAntiForgeryToken]
 		public async Task<IActionResult> ResetPassword(ResetPasswordFormViewModel model)
 		{
 			if (!ModelState.IsValid)
@@ -179,7 +175,7 @@ namespace bookify.Web.Controllers
 			if (result.Succeeded)
 			{
 				user.LastUpdatedOn=DateTime.Now;
-				user.LastUpdatedById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+				user.LastUpdatedById = User.GetUserId();
 				await _userManager.UpdateAsync(user);
 				return PartialView("_UserRow", _mapper.Map<UserViewModel>(user));
 			}

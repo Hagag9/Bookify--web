@@ -57,7 +57,6 @@ namespace bookify.Web.Controllers
             return View("Form",viewModel);
         }
 		[HttpPost]
-		[ValidateAntiForgeryToken]
         public IActionResult Create(RentalFormViewModel model)
         {
             if (!ModelState.IsValid)
@@ -86,7 +85,7 @@ namespace bookify.Web.Controllers
 			Rental rental = new()
             {
                 RentalCopies = copies,
-                CreatedById= User.FindFirst(ClaimTypes.NameIdentifier)!.Value
+                CreatedById= User.GetUserId()
             };
             subscriber.Rentals.Add(rental);
             _context.SaveChanges();
@@ -126,7 +125,6 @@ namespace bookify.Web.Controllers
             return View("Form",viewModel);
         }
 		[HttpPost]
-		[ValidateAntiForgeryToken]
         public IActionResult Edit(RentalFormViewModel model)
         {
             if (!ModelState.IsValid)
@@ -156,7 +154,7 @@ namespace bookify.Web.Controllers
 				return View("NotAllowedRental", rentalsError);
 
 			rental.RentalCopies = copies;
-            rental.LastUpdatedById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+            rental.LastUpdatedById = User.GetUserId();
             rental.LastUpdatedOn = DateTime.Now;
 
             _context.SaveChanges();
@@ -189,7 +187,6 @@ namespace bookify.Web.Controllers
             return View(viewModel);
         }
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public IActionResult Return(RentalReturnFormViewModel model)
         {
 
@@ -259,7 +256,7 @@ namespace bookify.Web.Controllers
             if(isUpdated)
             {
                 rental.LastUpdatedOn = DateTime.Now;
-                rental.LastUpdatedById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+                rental.LastUpdatedById = User.GetUserId();
                 rental.PenaltyPaid = model.PenaltyPaid;
 
                 _context.SaveChanges(); 
@@ -268,7 +265,6 @@ namespace bookify.Web.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public IActionResult GetCopyDetails(SearchFormViewModel model)
         {
             if (!ModelState.IsValid)
@@ -291,7 +287,6 @@ namespace bookify.Web.Controllers
             return PartialView("_CopyDetails",viewModel);
         }
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public IActionResult MarkAsDeleted (int id)
         {
             var rental = _context.Rentals.Find(id);
@@ -301,7 +296,7 @@ namespace bookify.Web.Controllers
             rental.IsDeleted = true;
 
             rental.LastUpdatedOn = DateTime.Now ;
-            rental.LastUpdatedById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+            rental.LastUpdatedById = User.GetUserId();
             _context.SaveChanges();
 
             var copiesCount = _context.RentalCopies.Count(r => r.RentalId == id);

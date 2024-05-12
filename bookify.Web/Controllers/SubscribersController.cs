@@ -40,7 +40,6 @@ namespace bookify.Web.Controllers
             return View();
         }
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public IActionResult Search(SearchFormViewModel model)
         {
 			if(!ModelState.IsValid)
@@ -80,7 +79,6 @@ namespace bookify.Web.Controllers
 			return View("Form", PopulateViewModel());
         }
         [HttpPost]
-		[ValidateAntiForgeryToken]
 		public async Task<IActionResult> Create(SubscriberFormViewModel model)
         {
             if (!ModelState.IsValid)
@@ -98,7 +96,7 @@ namespace bookify.Web.Controllers
 			}
             subscriber.ImageUrl=$"/images/subscribers/{imageName}";
             subscriber.ImageThumbnailUrl = $"/images/subscribers/thumb/{imageName}";
-            subscriber.CreatedById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+            subscriber.CreatedById = User.GetUserId();
 
 			subscriber.Subscriptions.Add(
 				  new Subscription() 
@@ -152,7 +150,6 @@ namespace bookify.Web.Controllers
 			return View("Form", PopulateViewModel(viewModel));
 		}
 		[HttpPost]
-		[ValidateAntiForgeryToken]
 		public async Task<IActionResult> Edit(SubscriberFormViewModel model)
 		{
 			if (!ModelState.IsValid)
@@ -184,14 +181,13 @@ namespace bookify.Web.Controllers
 				model.ImageThumbnailUrl= subscriber.ImageThumbnailUrl;
 			}
 			subscriber = _mapper.Map(model,subscriber);
-			subscriber.LastUpdatedById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+			subscriber.LastUpdatedById = User.GetUserId();
 			subscriber.LastUpdatedOn = DateTime.Now;
 			_context.SaveChanges();
 
 			return RedirectToAction(nameof(Details), new { id = model.Key });
 		}
 		[HttpPost]
-		[ValidateAntiForgeryToken]
 		public IActionResult RenewSubscription(string sKey)
 		{
 			var subscriberId= int.Parse(_dataProtector.Unprotect(sKey));
@@ -205,7 +201,7 @@ namespace bookify.Web.Controllers
 			var startDate= lastsubscription.EndDate < DateTime.Today ? DateTime.Today : lastsubscription.EndDate.AddDays(1);
 			Subscription newSubscription = new ()
 			{
-				CreatedById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value,
+				CreatedById = User.GetUserId(),
 				CreatedOn = DateTime.Now,
 		    	StartDate = startDate,
 				EndDate = startDate.AddYears(1)

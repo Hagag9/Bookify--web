@@ -1,4 +1,6 @@
-﻿namespace bookify.Web.Controllers
+﻿
+
+namespace bookify.Web.Controllers
 {
 	[Authorize(Roles = AppRoles.Archive)]
 	public class AuthorsController : Controller
@@ -24,13 +26,12 @@
             return PartialView("_Form");
         }
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public IActionResult Create(AuthorFormViewModel model)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
             var Author=_mapper.Map<Author>(model);
-            Author.CreatedById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+            Author.CreatedById = User.GetUserId();
             _context.Authors.Add(Author);
             _context.SaveChanges();
             return PartialView("_AuthorRow", _mapper.Map<AuthorViewModel>(Author));
@@ -46,7 +47,6 @@
             return PartialView("_Form", _mapper.Map<AuthorFormViewModel>(Author));
         }
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public IActionResult Edit(AuthorFormViewModel model)
         {
             if (!ModelState.IsValid)
@@ -55,20 +55,19 @@
             if (Author == null) 
             return NotFound(); 
             Author = _mapper.Map(model, Author);
-			Author.LastUpdatedById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+			Author.LastUpdatedById = User.GetUserId();
 			Author.LastUpdatedOn=DateTime.Now;          
 			_context.SaveChanges();
             return PartialView("_AuthorRow", _mapper.Map<AuthorViewModel>(Author));
         }
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public IActionResult ToggleStatus(int id)
         {
             var Author= _context.Authors.Find(id);
             if (Author == null)
                 return NotFound();
             Author.IsDeleted = !Author.IsDeleted;
-			Author.LastUpdatedById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+			Author.LastUpdatedById = User.GetUserId();
 			Author.LastUpdatedOn= DateTime.Now;
             _context.SaveChanges();
             return Ok(Author.LastUpdatedOn.ToString());
