@@ -6,11 +6,11 @@
 
         public int BookId { get; set; }
 
-        [Display(Name ="Is available for rental?")]
+        [Display(Name = "Is available for rental?")]
         public bool IsAvailableForRental { get; set; }
 
-        [Display(Name ="Edition Number")]
-        [Range(1,1000,ErrorMessage =Errors.Range)]
+        [Display(Name = "Edition Number")]
+        [Range(1, 1000, ErrorMessage = Errors.Range)]
         public int EditionNumber { get; set; }
 
         public bool ShowRentalInput { get; set; }

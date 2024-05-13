@@ -75,6 +75,8 @@ border-bottom: 1px dashed #dcdcdc;
 .mh-450px {
     min-height: 450px;
 }
+@media only screen and (min-width: 1025px)
+{
 .launcher .sidebar {
     position: fixed;
     overflow: hidden;
@@ -86,7 +88,9 @@ border-bottom: 1px dashed #dcdcdc;
     bottom: 50px;
     background-color: rgba(19, 0, 97, .3);
     border-radius: 1.75rem;
+   }
 }
+
 .sidebar-enabled {
     padding-right: 475px;
 }

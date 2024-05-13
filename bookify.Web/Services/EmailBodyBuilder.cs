@@ -9,7 +9,7 @@
             _webHostEnviroment = webHostEnviroment;
         }
 
-        public string GetEmailBody(string template , Dictionary<string,string> placeholders)
+        public string GetEmailBody(string template, Dictionary<string, string> placeholders)
         {
             var filePath = $"{_webHostEnviroment.WebRootPath}/templates/{template}.html";
             StreamReader str = new(filePath);
@@ -17,7 +17,7 @@
             str.Close();
 
             foreach (var placeholder in placeholders)
-                templateContent= templateContent.Replace($"[{placeholder.Key}]",placeholder.Value);
+                templateContent = templateContent.Replace($"[{placeholder.Key}]", placeholder.Value);
 
             return templateContent;
         }

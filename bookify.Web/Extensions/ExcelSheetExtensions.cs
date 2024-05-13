@@ -1,11 +1,9 @@
 ﻿using ClosedXML.Excel;
-using DocumentFormat.OpenXml.Office2016.Excel;
-using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace bookify.Web.Extensions
 {
-	public static class ExcelSheetExtensions
-	{
+    public static class ExcelSheetExtensions
+    {
         private static int _startRow = 4;
         public static void AddHeader(this IXLWorksheet sheet, string[] cells)
         {

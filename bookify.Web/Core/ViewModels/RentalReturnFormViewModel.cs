@@ -14,13 +14,14 @@ namespace bookify.Web.Core.ViewModels
 
         public List<ReturnCopyViewModel> SelectedCopies { get; set; } = new List<ReturnCopyViewModel> { };
 
-        public bool AllowExtend { get; set; }   
+        public bool AllowExtend { get; set; }
 
         public int TotalDelayInDays
-        { get
+        {
+            get
             {
-                return Copies.Sum(c=>c.DelayInDays);
+                return Copies.Sum(c => c.DelayInDays);
             }
-        }   
+        }
     }
 }

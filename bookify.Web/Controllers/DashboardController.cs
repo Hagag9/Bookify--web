@@ -1,45 +1,43 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
-namespace bookify.Web.Controllers
+﻿namespace bookify.Web.Controllers
 {
     [Authorize]
     public class DashBoardController : Controller
     {
-       private readonly ApplicationDbContext _context;
-       private readonly IMapper _mapper;
+        private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
 
-		public DashBoardController(ApplicationDbContext context, IMapper mapper)
-		{
-			_context = context;
-			_mapper = mapper;
-		}
-
-		public IActionResult Index()
+        public DashBoardController(ApplicationDbContext context, IMapper mapper)
         {
-           // var numberOfCopies= _context.BookCopies.Count(c => !c.IsDeleted);
+            _context = context;
+            _mapper = mapper;
+        }
+
+        public IActionResult Index()
+        {
+            // var numberOfCopies= _context.BookCopies.Count(c => !c.IsDeleted);
             var numberOfCopies = _context.Books.Count(b => !b.IsDeleted);
-			numberOfCopies = numberOfCopies <= 10 ? numberOfCopies : numberOfCopies / 10 * 10;
+            numberOfCopies = numberOfCopies <= 10 ? numberOfCopies : numberOfCopies / 10 * 10;
 
-			var numberOfSubscriber = _context.Subscribers.Count(s => !s.IsDeleted);
+            var numberOfSubscriber = _context.Subscribers.Count(s => !s.IsDeleted);
 
-            var LastAddedBooks = _context.Books.Include(b=>b.Author)
-                .Where(b=>!b.IsDeleted)
+            var LastAddedBooks = _context.Books.Include(b => b.Author)
+                .Where(b => !b.IsDeleted)
                 .OrderByDescending(b => b.Id)
                 .Take(8)
                 .ToList();
 
             var topBooks = _context.RentalCopies
-                .Include(c=>c.BookCopy)
-                .ThenInclude(c=>c!.Book)
-                .ThenInclude(b=>b!.Author)
-                .GroupBy( c=> new 
-                { 
+                .Include(c => c.BookCopy)
+                .ThenInclude(c => c!.Book)
+                .ThenInclude(b => b!.Author)
+                .GroupBy(c => new
+                {
                     c.BookCopy!.BookId,
                     c.BookCopy.Book!.Title,
                     c.BookCopy.Book.ImageThumbnailUrl,
                     AuthorName = c.BookCopy.Book.Author!.Name
                 })
-                .Select( b => new
+                .Select(b => new
                 {
                     b.Key.BookId,
                     b.Key.Title,
@@ -62,15 +60,15 @@ namespace bookify.Web.Controllers
                 NumberOfSubscribers = numberOfSubscriber,
                 LastAddedBooks = _mapper.Map<IEnumerable<BookViewModel>>(LastAddedBooks),
                 TopBooks = topBooks
-			};
+            };
             return View(viewModel);
         }
 
         [AjaxOnly]
-        public IActionResult GetRentalsPerDay(DateTime? startDate , DateTime? endDate)
+        public IActionResult GetRentalsPerDay(DateTime? startDate, DateTime? endDate)
         {
-               startDate ??= DateTime.Today.AddDays(-29);
-               endDate ??= DateTime.Today;
+            startDate ??= DateTime.Today.AddDays(-29);
+            endDate ??= DateTime.Today;
 
             var data = _context.RentalCopies
                 .Where(c => c.RentalDate >= startDate && c.RentalDate <= endDate)
@@ -81,11 +79,11 @@ namespace bookify.Web.Controllers
                     Value = g.Count().ToString()
                 }).ToList();
 
-            List<ChartItemViewModel> figures = new ();
+            List<ChartItemViewModel> figures = new();
 
-            for(var day = startDate; day <= endDate ; day = day.Value.AddDays(1))
+            for (var day = startDate; day <= endDate; day = day.Value.AddDays(1))
             {
-                var dayData= data.SingleOrDefault(d =>d.Label ==  day.Value.ToString("d MMM"));
+                var dayData = data.SingleOrDefault(d => d.Label == day.Value.ToString("d MMM"));
 
                 ChartItemViewModel item = new()
                 {
@@ -96,8 +94,8 @@ namespace bookify.Web.Controllers
             }
             return Ok(figures);
         }
-		[AjaxOnly]
-		public IActionResult GetSubscribersPerCity()
+        [AjaxOnly]
+        public IActionResult GetSubscribersPerCity()
         {
             var data = _context.Subscribers
                 .Include(s => s.Governorate)
@@ -108,7 +106,7 @@ namespace bookify.Web.Controllers
                     Label = g.Key.GovernorateName,
                     Value = g.Count().ToString()
                 }).ToList();
-            
+
             return Ok(data);
         }
     }

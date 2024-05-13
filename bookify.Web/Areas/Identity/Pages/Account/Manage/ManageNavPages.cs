@@ -2,10 +2,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
-using System;
-using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace  bookify.Web.Areas.Identity.Pages.Account.Manage
+namespace bookify.Web.Areas.Identity.Pages.Account.Manage
 {
     /// <summary>
     ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used

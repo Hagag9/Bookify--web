@@ -1,21 +1,17 @@
-﻿
-using bookify.Web.Core.Models;
-using bookify.Web.Extensions;
-using ClosedXML.Excel;
+﻿using ClosedXML.Excel;
 using OpenHtmlToPdf;
-using System.IO;
 using System.Net.Mime;
 using ViewToHTML.Services;
 
 namespace bookify.Web.Controllers
 {
-	[Authorize(Roles = AppRoles.Admin)]
-	public class ReportsController : Controller
-	{
-		private readonly ApplicationDbContext _context;
+    [Authorize(Roles = AppRoles.Admin)]
+    public class ReportsController : Controller
+    {
+        private readonly ApplicationDbContext _context;
         private readonly IWebHostEnvironment _webHost;
         private readonly IMapper _mapper;
-		private readonly IViewRendererService _viewRendererService;
+        private readonly IViewRendererService _viewRendererService;
         private readonly string _logoPath;
         private readonly int _sheetStartRow = 5;
 
@@ -25,13 +21,13 @@ namespace bookify.Web.Controllers
             _mapper = mapper;
             _webHost = webHost;
             _viewRendererService = viewRendererService;
-			_logoPath = $"{_webHost.WebRootPath}/assets/images/Logo.png";
-		}
+            _logoPath = $"{_webHost.WebRootPath}/assets/images/Logo.png";
+        }
 
         public IActionResult Index()
-		{
-			return View();
-		}
+        {
+            return View();
+        }
         #region Books
         public IActionResult Books(IList<int> selectedAuthors, IList<int> selectedCategories,
             int? pageNumber)

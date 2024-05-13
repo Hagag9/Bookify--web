@@ -2,18 +2,11 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
-using System;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
-using System.Text.Encodings.Web;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using bookify.Web.Core.Models;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using System.Text;
+using System.Text.Encodings.Web;
 
 namespace bookify.Web.Areas.Identity.Pages.Account
 {
@@ -50,13 +43,13 @@ namespace bookify.Web.Areas.Identity.Pages.Account
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [Required]
-           // [EmailAddress]
+            // [EmailAddress]
             public string Username { get; set; }
         }
 
         public void OnGet(string username)
         {
-            Input = new InputModel { Username = username }; 
+            Input = new InputModel { Username = username };
         }
 
         public async Task<IActionResult> OnPostAsync()
@@ -66,8 +59,8 @@ namespace bookify.Web.Areas.Identity.Pages.Account
                 return Page();
             }
 
-          var user = await _userManager.Users.
-                SingleOrDefaultAsync(u => (u.NormalizedUserName == Input.Username.ToUpper() || u.NormalizedEmail == Input.Username.ToUpper()) && !u.IsDeleted);
+            var user = await _userManager.Users.
+                  SingleOrDefaultAsync(u => (u.NormalizedUserName == Input.Username.ToUpper() || u.NormalizedEmail == Input.Username.ToUpper()) && !u.IsDeleted);
             if (user == null)
             {
                 ModelState.AddModelError(string.Empty, "Verification email sent. Please check your email.");
@@ -91,7 +84,7 @@ namespace bookify.Web.Areas.Identity.Pages.Account
                     {"linkTitle", "Active Account"}
                 };
             var body = _emailBodyBuilder.GetEmailBody(EmailTemplates.Email, placeHolders);
-            await _emailSender.SendEmailAsync(user.Email, "Confirm your email",body);
+            await _emailSender.SendEmailAsync(user.Email, "Confirm your email", body);
 
             ModelState.AddModelError(string.Empty, "Verification email sent. Please check your email.");
             return Page();

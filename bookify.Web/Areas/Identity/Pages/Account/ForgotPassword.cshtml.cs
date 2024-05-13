@@ -2,18 +2,11 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
-using System;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
-using System.Text.Encodings.Web;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using bookify.Web.Core.Models;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using System.Text;
+using System.Text.Encodings.Web;
 
 namespace bookify.Web.Areas.Identity.Pages.Account
 {
@@ -73,18 +66,18 @@ namespace bookify.Web.Areas.Identity.Pages.Account
                     values: new { area = "Identity", code },
                     protocol: Request.Scheme);
 
-                var placeHolders= new Dictionary<string, string>()
+                var placeHolders = new Dictionary<string, string>()
                 {
-                    {"imageUrl","https://res.cloudinary.com/ahagag/image/upload/v1712359686/icon-positive-vote-2_gpjp26.png"}, 
-                    {"header", $"Hey {user.FullName}, "}, 
-                    {"body" , "please click the bellow button to reset your password"}, 
-                    {"url", $"{HtmlEncoder.Default.Encode(callbackUrl!)}"}, 
+                    {"imageUrl","https://res.cloudinary.com/ahagag/image/upload/v1712359686/icon-positive-vote-2_gpjp26.png"},
+                    {"header", $"Hey {user.FullName}, "},
+                    {"body" , "please click the bellow button to reset your password"},
+                    {"url", $"{HtmlEncoder.Default.Encode(callbackUrl!)}"},
                     {"linkTitle", "Reset Password"}
                 };
-                var body = _emailBodyBuilder.GetEmailBody(EmailTemplates.Email,placeHolders);
+                var body = _emailBodyBuilder.GetEmailBody(EmailTemplates.Email, placeHolders);
                 await _emailSender.SendEmailAsync(
                     Input.Email,
-                    "Reset Password",body);
+                    "Reset Password", body);
 
                 return RedirectToPage("./ForgotPasswordConfirmation");
             }
